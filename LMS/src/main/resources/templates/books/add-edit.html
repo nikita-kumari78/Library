@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${book.id == null ? 'Add New Book' : 'Edit Book'}"></title>
+</head>
+<body>
+    <!-- Extends the common layout.html -->
+    <div th:replace="~{layout/layout :: layout(~{::content}, ${book.id == null ? 'Add New Book' : 'Edit Book'})}">
+        <div th:fragment="content">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center"
+                th:text="${book.id == null ? 'Add New Book' : 'Edit Book'}"></h1>
+
+            <div class="card max-w-lg mx-auto p-6">
+                <form th:action="${book.id == null ? '/books/new' : '/books/edit/' + book.id}"
+                      th:object="${book}" method="post">
+
+                    <div class="mb-4">
+                        <label for="isbn" class="form-label">ISBN:</label>
+                        <input type="text" id="isbn" th:field="*{isbn}" class="form-input"
+                               th:classappend="${#fields.hasErrors('isbn') ? 'border-red-500' : ''}">
+                        <p th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}" class="error-message"></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="title" class="form-label">Title:</label>
+                        <input type="text" id="title" th:field="*{title}" class="form-input"
+                               th:classappend="${#fields.hasErrors('title') ? 'border-red-500' : ''}">
+                        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="author" class="form-label">Author:</label>
+                        <input type="text" id="author" th:field="*{author}" class="form-input"
+                               th:classappend="${#fields.hasErrors('author') ? 'border-red-500' : ''}">
+                        <p th:if="${#fields.hasErrors('author')}" th:errors="*{author}" class="error-message"></p>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-6">
+                        <button type="submit" class="btn-primary">
+                            <span th:text="${book.id == null ? 'Add Book' : 'Update Book'}"></span>
+                        </button>
+                        <a th:href="@{/books}" class="btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

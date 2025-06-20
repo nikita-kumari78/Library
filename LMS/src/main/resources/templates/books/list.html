@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle ?: 'Book Management'}"></title>
+</head>
+<body>
+    <!-- Extends the common layout.html -->
+    <div th:replace="~{layout/layout :: layout(~{::content}, ${pageTitle ?: 'Book Management'})}">
+        <div th:fragment="content">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center" th:text="${pageTitle ?: 'Book List'}"></h1>
+
+            <!-- Search Bar -->
+            <div class="mb-6 flex justify-center">
+                <form th:action="@{/books/search}" method="get" class="flex items-center space-x-2 w-full max-w-md">
+                    <input type="text" name="query" placeholder="Search by title or author..."
+                           class="form-input flex-grow" th:value="${searchQuery}">
+                    <button type="submit" class="btn-primary">Search</button>
+                    <a th:href="@{/books}" class="btn-secondary">Clear</a>
+                </form>
+            </div>
+
+            <div class="mb-6 text-center">
+                <a th:href="@{/books/new}" class="btn-primary inline-block">Add New Book</a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(books)}" class="text-center text-gray-600">
+                <p>No books found. <a th:href="@{/books/new}" class="text-blue-600 hover:underline">Add one now!</a></p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(books)}" class="card overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">ISBN</th>
+                            <th scope="col" class="px-6 py-3">Title</th>
+                            <th scope="col" class="px-6 py-3">Author</th>
+                            <th scope="col" class="px-6 py-3">Available</th>
+                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="book : ${books}">
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${book.id}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${book.isbn}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${book.title}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${book.author}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:if="${book.available}" class="text-green-600 font-semibold">Yes</span>
+                                <span th:unless="${book.available}" class="text-red-600 font-semibold">No</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <a th:href="@{/books/edit/{id}(id=${book.id})}" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
+                                <a th:href="@{/books/delete/{id}(id=${book.id})}"
+                                   onclick="return confirm('Are you sure you want to delete this book? This action cannot be undone.');"
+                                   class="text-red-600 hover:text-red-900">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

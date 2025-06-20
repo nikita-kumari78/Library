@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle ?: 'Borrowing Records'}"></title>
+</head>
+<body>
+
+    <div th:replace="~{layout/layout :: layout(~{::content}, ${pageTitle ?: 'Borrowing Records'})}">
+        <div th:fragment="content">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center" th:text="${pageTitle ?: 'Borrowing Records'}"></h1>
+
+            <div class="mb-6 text-center">
+                <a th:href="@{/borrowings/borrow/new}" class="btn-primary inline-block mr-4">Borrow New Book</a>
+                <a th:href="@{/borrowings/active}" class="btn-secondary inline-block">View Active Borrowings</a>
+                <a th:href="@{/borrowings/list}" class="btn-secondary inline-block ml-4">View All Borrowings</a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(records)}" class="text-center text-gray-600">
+                <p>No borrowing records found.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(records)}" class="card overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Record ID</th>
+                            <th scope="col" class="px-6 py-3">Book Title</th>
+                            <th scope="col" class="px-6 py-3">Student Name</th>
+                            <th scope="col" class="px-6 py-3">Borrow Date</th>
+                            <th scope="col" class="px-6 py-3">Return Date</th>
+                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="record : ${records}">
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${record.id}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${record.bookTitle}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${record.studentName}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap" th:text="${#temporals.format(record.borrowDate, 'yyyy-MM-dd')}"></td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:if="${record.returnDate}" th:text="${#temporals.format(record.returnDate, 'yyyy-MM-dd')}"></span>
+                                <span th:unless="${record.returnDate}" class="text-yellow-600 font-semibold">Not Returned</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <a th:if="${record.returnDate == null}"
+                                   th:href="@{/borrowings/return/{id}(id=${record.id})}"
+                                   onclick="return confirm('Are you sure you want to mark this book as returned?');"
+                                   class="text-green-600 hover:text-green-900">Return Book</a>
+                                <span th:unless="${record.returnDate == null}" class="text-gray-500">Returned</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Borrow Book</title>
+</head>
+<body>
+
+    <div th:replace="~{layout/layout :: layout(~{::content}, 'Borrow Book')}">
+        <div th:fragment="content">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Borrow a Book</h1>
+
+            <div class="card max-w-lg mx-auto p-6">
+                <form th:action="@{/borrowings/borrow}" th:object="${borrowRequest}" method="post">
+
+                    <div class="mb-4">
+                        <label for="bookId" class="form-label">Select Book:</label>
+                        <select id="bookId" th:field="*{bookId}" class="form-input"
+                                th:classappend="${#fields.hasErrors('bookId') ? 'border-red-500' : ''}">
+                            <option value="">-- Select a Book --</option>
+                            <option th:each="book : ${books}"
+                                    th:value="${book.id}"
+                                    th:text="${book.title + ' by ' + book.author + ' (ISBN: ' + book.isbn + ')'}"></option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('bookId')}" th:errors="*{bookId}" class="error-message"></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="studentId" class="form-label">Select Student:</label>
+                        <select id="studentId" th:field="*{studentId}" class="form-input"
+                                th:classappend="${#fields.hasErrors('studentId') ? 'border-red-500' : ''}">
+                            <option value="">-- Select a Student --</option>
+                            <option th:each="student : ${students}"
+                                    th:value="${student.id}"
+                                    th:text="${student.name + ' (Contact: ' + student.contact + ')'}"></option>
+                        </select>
+                        <p th:if="${#fields.hasErrors('studentId')}" th:errors="*{studentId}" class="error-message"></p>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-6">
+                        <button type="submit" class="btn-primary">Borrow Book</button>
+                        <a th:href="@{/borrowings/active}" class="btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

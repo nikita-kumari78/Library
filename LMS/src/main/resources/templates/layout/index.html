@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Library Management System</title>
+</head>
+<body>
+   
+    <div th:replace="~{layout/layout :: layout(~{::content}, 'Home')}">
+        <div th:fragment="content">
+            <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-8">Welcome to the Library Management System</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+               
+                <div class="card flex flex-col items-center p-6 bg-blue-50 hover:bg-blue-100 transition-colors duration-200">
+                    <div class="text-6xl text-blue-600 mb-4">📚</div> 
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Book Management</h2>
+                    <p class="text-center text-gray-600 mb-4">View, add, update, and remove books from the library collection.</p>
+                    <a href="/books" class="btn-primary inline-block">Manage Books</a>
+                </div>
+
+                
+                <div class="card flex flex-col items-center p-6 bg-green-50 hover:bg-green-100 transition-colors duration-200">
+                    <div class="text-6xl text-green-600 mb-4">🧑‍🎓</div> 
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Student Management</h2>
+                    <p class="text-center text-gray-600 mb-4">Register and manage student records in the system.</p>
+                    <a href="/students" class="btn-primary inline-block">Manage Students</a>
+                </div>
+
+              
+                <div class="card flex flex-col items-center p-6 bg-purple-50 hover:bg-purple-100 transition-colors duration-200">
+                    <div class="text-6xl text-purple-600 mb-4">📖</div> 
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-2">Borrowing System</h2>
+                    <p class="text-center text-gray-600 mb-4">Handle book borrowing, returns, and track history.</p>
+                    <a href="/borrowings/active" class="btn-primary inline-block">Manage Borrowings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

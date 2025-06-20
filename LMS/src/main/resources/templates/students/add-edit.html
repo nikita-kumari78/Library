@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${student.id == null ? 'Register New Student' : 'Edit Student'}"></title>
+</head>
+<body>
+    <!-- Extends the common layout.html -->
+    <div th:replace="~{layout/layout :: layout(~{::content}, ${student.id == null ? 'Register New Student' : 'Edit Student'})}">
+        <div th:fragment="content">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center"
+                th:text="${student.id == null ? 'Register New Student' : 'Edit Student'}"></h1>
+
+            <div class="card max-w-lg mx-auto p-6">
+                <form th:action="${student.id == null ? '/students/new' : '/students/edit/' + student.id}"
+                      th:object="${student}" method="post">
+
+                    <div class="mb-4">
+                        <label for="name" class="form-label">Student Name:</label>
+                        <input type="text" id="name" th:field="*{name}" class="form-input"
+                               th:classappend="${#fields.hasErrors('name') ? 'border-red-500' : ''}">
+                        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="contact" class="form-label">Contact (Email or 10-digit Phone):</label>
+                        <input type="text" id="contact" th:field="*{contact}" class="form-input"
+                               th:classappend="${#fields.hasErrors('contact') ? 'border-red-500' : ''}">
+                        <p th:if="${#fields.hasErrors('contact')}" th:errors="*{contact}" class="error-message"></p>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-6">
+                        <button type="submit" class="btn-primary">
+                            <span th:text="${student.id == null ? 'Register Student' : 'Update Student'}"></span>
+                        </button>
+                        <a th:href="@{/students}" class="btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
