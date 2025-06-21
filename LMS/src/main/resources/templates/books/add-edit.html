@@ -3,48 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${book.id == null ? 'Add New Book' : 'Edit Book'}"></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .form-label {
+            font-weight: 600;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        .error-message {
+            font-size: 0.875rem;
+            color: #dc2626;
+            margin-top: 0.25rem;
+        }
+        .btn-primary {
+            background-color: #10b981;
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #059669;
+        }
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+    </style>
 </head>
 <body>
-    <!-- Extends the common layout.html -->
-    <div th:replace="~{layout/layout :: layout(~{::content}, ${book.id == null ? 'Add New Book' : 'Edit Book'})}">
-        <div th:fragment="content">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center"
-                th:text="${book.id == null ? 'Add New Book' : 'Edit Book'}"></h1>
 
-            <div class="card max-w-lg mx-auto p-6">
-                <form th:action="${book.id == null ? '/books/new' : '/books/edit/' + book.id}"
-                      th:object="${book}" method="post">
+<!-- Use the main layout from layout.html -->
+<div th:replace="~{layout/layout :: layout(~{::content}, ${book.id == null ? 'Add New Book' : 'Edit Book'})}">
 
-                    <div class="mb-4">
-                        <label for="isbn" class="form-label">ISBN:</label>
-                        <input type="text" id="isbn" th:field="*{isbn}" class="form-input"
-                               th:classappend="${#fields.hasErrors('isbn') ? 'border-red-500' : ''}">
-                        <p th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}" class="error-message"></p>
-                    </div>
+    <!-- Injected content fragment -->
+    <div th:fragment="content">
+        <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-10"
+            th:text="${book.id == null ? 'Add New Book' : 'Edit Book'}"></h1>
 
-                    <div class="mb-4">
-                        <label for="title" class="form-label">Title:</label>
-                        <input type="text" id="title" th:field="*{title}" class="form-input"
-                               th:classappend="${#fields.hasErrors('title') ? 'border-red-500' : ''}">
-                        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></p>
-                    </div>
+        <div class="card max-w-xl mx-auto p-8 bg-white rounded-lg shadow-md">
+            <form th:action="${book.id == null ? '/books/new' : '/books/edit/' + book.id}"
+                  th:object="${book}" method="post" class="space-y-6">
 
-                    <div class="mb-4">
-                        <label for="author" class="form-label">Author:</label>
-                        <input type="text" id="author" th:field="*{author}" class="form-input"
-                               th:classappend="${#fields.hasErrors('author') ? 'border-red-500' : ''}">
-                        <p th:if="${#fields.hasErrors('author')}" th:errors="*{author}" class="error-message"></p>
-                    </div>
+                <!-- ISBN -->
+                <div>
+                    <label for="isbn" class="form-label">ISBN</label>
+                    <input type="text" id="isbn" th:field="*{isbn}" class="form-input"
+                           th:classappend="${#fields.hasErrors('isbn')} ? 'border-red-500'">
+                    <p th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}" class="error-message"></p>
+                </div>
 
-                    <div class="flex justify-between items-center mt-6">
-                        <button type="submit" class="btn-primary">
-                            <span th:text="${book.id == null ? 'Add Book' : 'Update Book'}"></span>
-                        </button>
-                        <a th:href="@{/books}" class="btn-secondary">Cancel</a>
-                    </div>
-                </form>
-            </div>
+                <!-- Title -->
+                <div>
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-input"
+                           th:classappend="${#fields.hasErrors('title')} ? 'border-red-500'">
+                    <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></p>
+                </div>
+
+                <!-- Author -->
+                <div>
+                    <label for="author" class="form-label">Author</label>
+                    <input type="text" id="author" th:field="*{author}" class="form-input"
+                           th:classappend="${#fields.hasErrors('author')} ? 'border-red-500'">
+                    <p th:if="${#fields.hasErrors('author')}" th:errors="*{author}" class="error-message"></p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex justify-between items-center pt-4">
+                    <button type="submit" class="btn-primary">
+                        <span th:text="${book.id == null ? 'Add Book' : 'Update Book'}"></span>
+                    </button>
+                    <a th:href="@{/books}" class="btn-secondary">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+
 </body>
 </html>

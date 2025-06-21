@@ -21,5 +21,5 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
 
     Optional<BorrowingRecord> findByBookAndStudentAndReturnDateIsNull(Book book, Student student);
 
-    String findByStudentAndReturnDateIsNull(Student student);
+    List<BorrowingRecord> findByStudentAndReturnDateIsNull(Student student);
 }

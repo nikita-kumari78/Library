@@ -2,62 +2,89 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${pageTitle ?: 'Student Management'}"></title>
+    <title th:text="${pageTitle ?: 'Student Management'}">Student Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-    
-    <div th:replace="~{layout/layout :: layout(~{::content}, ${pageTitle ?: 'Student Management'})}">
-        <div th:fragment="content">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center" th:text="${pageTitle ?: 'Student List'}"></h1>
+<div th:replace="~{layout/layout :: layout(~{::content}, ${pageTitle ?: 'Student Management'})}">
 
-           
-            <div class="mb-6 flex justify-center">
-                <form th:action="@{/students/search}" method="get" class="flex items-center space-x-2 w-full max-w-md">
-                    <input type="text" name="name" placeholder="Search by student name..."
-                           class="form-input flex-grow" th:value="${searchQuery}">
-                    <button type="submit" class="btn-primary">Search</button>
-                    <a th:href="@{/students}" class="btn-secondary">Clear</a>
-                </form>
-            </div>
+    <div th:fragment="content">
+        <!-- Title -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center"
+            th:text="${pageTitle ?: 'Student List'}">Student List</h1>
 
-            <div class="mb-6 text-center">
-                <a th:href="@{/students/new}" class="btn-primary inline-block">Register New Student</a>
-            </div>
+        <!-- Flash Messages -->
+        <div th:if="${successMessage}" class="bg-green-100 text-green-800 px-4 py-2 rounded-md text-center mb-4">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="bg-red-100 text-red-800 px-4 py-2 rounded-md text-center mb-4">
+            <p th:text="${errorMessage}"></p>
+        </div>
 
-            <div th:if="${#lists.isEmpty(students)}" class="text-center text-gray-600">
-                <p>No students found. <a th:href="@{/students/new}" class="text-blue-600 hover:underline">Register one now!</a></p>
-            </div>
+        <!-- Search Bar -->
+        <div class="mb-6 flex justify-center">
+            <form th:action="@{/students/search}" method="get" class="flex items-center space-x-2 w-full max-w-md">
+                <input type="text" name="name" placeholder="Search by student name..." th:value="${searchQuery}"
+                       class="form-input flex-grow border border-slate-300 rounded-md px-4 py-2 focus:ring focus:ring-blue-200 focus:outline-none">
+                <button type="submit"
+                        class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-md">
+                    Search
+                </button>
+                <a th:href="@{/students}"
+                   class="bg-slate-500 hover:bg-slate-600 text-white font-semibold px-4 py-2 rounded-md">
+                    Clear
+                </a>
+            </form>
+        </div>
 
-            <div th:unless="${#lists.isEmpty(students)}" class="card overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
-                            <th scope="col" class="px-6 py-3">Name</th>
-                            <th scope="col" class="px-6 py-3">Contact</th>
-                            <th scope="col" class="px-6 py-3 text-center">Actions</th>
-                            <th scope="col" class="px-6 py-3 text-center">Borrowing History</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr th:each="student : ${students}">
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${student.id}"></td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${student.name}"></td>
-                            <td class="px-6 py-4 whitespace-nowrap" th:text="${student.contact}"></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <a th:href="@{/students/edit/{id}(id=${student.id})}" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
-                                <a th:href="@{/students/delete/{id}(id=${student.id})}"
-                                   onclick="return confirm('Are you sure you want to delete this student? This action cannot be undone.');"
-                                   class="text-red-600 hover:text-red-900">Delete</a>
-                            </td>
-                             <td class="px-6 py-4 whitespace-nowrap text-center">
-                                <a th:href="@{/borrowings/student/{id}(id=${student.id})}" class="text-purple-600 hover:text-purple-900">View History</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <!-- Add Student Button -->
+        <div class="mb-6 text-center">
+            <a th:href="@{/students/new}"
+               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md shadow">
+                Register New Student
+            </a>
+        </div>
+
+        <!-- No Students Found -->
+        <div th:if="${#lists.isEmpty(students)}" class="text-center text-gray-600">
+            <p>No students found.
+                <a th:href="@{/students/new}" class="text-blue-600 hover:underline">Register one now!</a>
+            </p>
+        </div>
+
+        <!-- Student Table -->
+        <div th:unless="${#lists.isEmpty(students)}" class="card bg-white p-4 rounded-lg shadow-md overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Contact</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Actions</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Borrowing History</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="student : ${students}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4" th:text="${student.id}">1</td>
+                    <td class="px-6 py-4" th:text="${student.name}">John Doe</td>
+                    <td class="px-6 py-4" th:text="${student.contact}">john@example.com</td>
+                    <td class="px-6 py-4 text-center space-x-2">
+                        <a th:href="@{/students/edit/{id}(id=${student.id})}"
+                           class="text-blue-600 hover:text-blue-800 font-medium">Edit</a>
+                        <a th:href="@{/students/delete/{id}(id=${student.id})}"
+                           onclick="return confirm('Are you sure you want to delete this student?');"
+                           class="text-red-600 hover:text-red-800 font-medium">Delete</a>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <a th:href="@{/borrowings/student/{id}(id=${student.id})}"
+                           class="text-purple-600 hover:text-purple-800 font-medium">View History</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 </body>
 </html>

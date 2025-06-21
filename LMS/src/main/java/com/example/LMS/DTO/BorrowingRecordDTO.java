@@ -1,4 +1,4 @@
-package com.example.LMS.DTO; // Updated package to align with your provided entity
+package com.example.LMS.DTO; 
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
