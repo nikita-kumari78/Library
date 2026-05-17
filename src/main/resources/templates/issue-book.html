@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LMS — Issue Book</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="app-body">
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-icon">📚</span>
+        <div><div class="logo-title">LibraSystem</div><div class="logo-sub">LMS v1.0</div></div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">MAIN</div>
+        <a th:href="@{/dashboard}" class="nav-item">🏠 Dashboard</a>
+        <a th:href="@{/books}" class="nav-item">📚 Books</a>
+        <a th:href="@{/borrow}" class="nav-item active">🔄 Borrowing</a>
+        <div class="nav-section">ADMIN</div>
+        <a th:href="@{/members}" class="nav-item">👥 Members</a>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">AD</div>
+        <div class="user-info"><div class="user-name">Admin</div><div class="user-role">ADMIN</div></div>
+        <a th:href="@{/logout}" class="logout-btn">⬅</a>
+    </div>
+</div>
+<div class="main">
+    <div class="topbar"><span class="page-title">Issue Book</span></div>
+    <div class="content">
+        <div class="card" style="max-width:500px;">
+            <div class="card-header"><h3>📤 Issue Book to Student</h3></div>
+            <form th:action="@{/borrow/issue}" method="post" style="padding:16px;">
+                <div class="form-group">
+                    <label>Select Student *</label>
+                    <select name="userId" class="form-input" required>
+                        <option value="">-- Select Student --</option>
+                        <option th:each="member : ${members}"
+                                th:value="${member.id}"
+                                th:text="${member.name} + ' (' + ${member.email} + ')'">Student</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select Book *</label>
+                    <select name="bookId" class="form-input" required>
+                        <option value="">-- Select Book --</option>
+                        <option th:each="book : ${availableBooks}"
+                                th:value="${book.id}"
+                                th:text="${book.title} + ' — ' + ${book.author}">Book</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button type="submit" class="btn btn-primary">📤 Issue Book</button>
+                    <a th:href="@{/borrow}" class="btn btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

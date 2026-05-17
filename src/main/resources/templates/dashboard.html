@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>LMS — Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="app-body">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-icon">📚</span>
+        <div>
+            <div class="logo-title">LibraSystem</div>
+            <div class="logo-sub">LMS v1.0</div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section">MAIN</div>
+        <a th:href="@{/dashboard}" class="nav-item active">🏠 Dashboard</a>
+        <a th:href="@{/books}" class="nav-item">📚 Books</a>
+        <a th:href="@{/borrow}" class="nav-item">🔄 Borrowing</a>
+
+        <div class="nav-section" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+        <a th:href="@{/members}" class="nav-item" sec:authorize="hasRole('ADMIN')">👥 Members</a>
+    </nav>
+
+    <div class="sidebar-user">
+        <div class="user-avatar" sec:authentication="name" th:text="${#strings.substring(#authentication.name,0,2).toUpperCase()}">AD</div>
+        <div class="user-info">
+            <div class="user-name" sec:authentication="name" th:text="${#authentication.name}">Admin</div>
+            <div class="user-role" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+            <div class="user-role" sec:authorize="hasRole('STUDENT')">STUDENT</div>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn" title="Logout">⬅</a>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+    <div class="topbar">
+        <span class="page-title">Dashboard</span>
+        <div class="topbar-right">
+            <span class="topbar-date" th:text="${currentDate}">Today</span>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#60a5fa">📚</div>
+                <div class="stat-value" th:text="${totalBooks}">0</div>
+                <div class="stat-label">Total Books</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#4ade80">👥</div>
+                <div class="stat-value" th:text="${totalMembers}">0</div>
+                <div class="stat-label">Members</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#f59e0b">🔄</div>
+                <div class="stat-value" th:text="${totalBorrowed}">0</div>
+                <div class="stat-label">Borrowed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color:#f87171">⚠</div>
+                <div class="stat-value" th:text="${totalOverdue}">0</div>
+                <div class="stat-label">Overdue</div>
+            </div>
+        </div>
+
+        <!-- OVERDUE ALERT -->
+        <div class="alert alert-warn" th:if="${totalOverdue > 0}">
+            ⚠ <strong th:text="${totalOverdue}">0</strong> books are overdue!
+            <a th:href="@{/borrow}">View records →</a>
+        </div>
+
+        <!-- RECENT BOOKS TABLE -->
+        <div class="card">
+            <div class="card-header">
+                <h3>📖 Recent Books</h3>
+                <a th:href="@{/books}" class="btn btn-sm btn-ghost">View All</a>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="book : ${recentBooks}">
+                        <td th:text="${book.id}">1</td>
+                        <td th:text="${book.title}">Title</td>
+                        <td th:text="${book.author}">Author</td>
+                        <td><span class="badge badge-blue" th:text="${book.category}">CS</span></td>
+                        <td>
+                            <span th:class="${'status status-' + book.status.toLowerCase()}"
+                                  th:text="${book.status}">AVAILABLE</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

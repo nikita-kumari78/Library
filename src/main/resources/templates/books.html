@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>LMS — Books</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="app-body">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-icon">📚</span>
+        <div>
+            <div class="logo-title">LibraSystem</div>
+            <div class="logo-sub">LMS v1.0</div>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">MAIN</div>
+        <a th:href="@{/dashboard}" class="nav-item">🏠 Dashboard</a>
+        <a th:href="@{/books}" class="nav-item active">📚 Books</a>
+        <a th:href="@{/borrow}" class="nav-item">🔄 Borrowing</a>
+        <div class="nav-section" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+        <a th:href="@{/members}" class="nav-item" sec:authorize="hasRole('ADMIN')">👥 Members</a>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+            <div class="user-name" sec:authentication="name" th:text="${#authentication.name}">User</div>
+            <div class="user-role" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+            <div class="user-role" sec:authorize="hasRole('STUDENT')">STUDENT</div>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn">⬅</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <span class="page-title">Books</span>
+        <div class="topbar-right">
+            <a th:href="@{/books/add}" class="btn btn-primary btn-sm" sec:authorize="hasRole('ADMIN')">+ Add Book</a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- FILTER BAR -->
+        <form th:action="@{/books}" method="get" class="filter-bar">
+            <select name="category" class="filter-select" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                <option value="Computer Science" th:selected="${category == 'Computer Science'}">Computer Science</option>
+                <option value="Mathematics" th:selected="${category == 'Mathematics'}">Mathematics</option>
+                <option value="Physics" th:selected="${category == 'Physics'}">Physics</option>
+                <option value="Literature" th:selected="${category == 'Literature'}">Literature</option>
+            </select>
+        </form>
+
+        <!-- BOOKS TABLE -->
+        <div class="card">
+            <div class="card-header">
+                <h3>📚 Book Catalog</h3>
+                <span class="text-muted" th:text="'Total: ' + ${bookPage.totalElements} + ' books'">Total: 0 books</span>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Category</th>
+                        <th>Copies</th>
+                        <th>Status</th>
+                        <th sec:authorize="hasRole('ADMIN')">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="book : ${bookPage.content}">
+                        <td th:text="${book.id}">1</td>
+                        <td><strong th:text="${book.title}">Title</strong></td>
+                        <td th:text="${book.author}">Author</td>
+                        <td><code th:text="${book.isbn}">ISBN</code></td>
+                        <td><span class="badge badge-blue" th:text="${book.category}">CS</span></td>
+                        <td th:text="${book.availableCopies} + '/' + ${book.totalCopies}">2/3</td>
+                        <td>
+                            <span th:class="${book.status == 'AVAILABLE' ? 'status status-available' :
+                                             book.status == 'BORROWED'  ? 'status status-borrowed'  :
+                                             'status status-overdue'}"
+                                  th:text="${book.status}">AVAILABLE</span>
+                        </td>
+                        <td sec:authorize="hasRole('ADMIN')">
+                            <a th:href="@{/books/edit/{id}(id=${book.id})}" class="btn btn-sm btn-ghost">Edit</a>
+                            <form th:action="@{/books/delete/{id}(id=${book.id})}" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Delete this book?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${bookPage.content.empty}">
+                        <td colspan="8" style="text-align:center;color:#64748b;padding:24px;">No books found</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- PAGINATION -->
+            <div class="pagination" th:if="${bookPage.totalPages > 1}">
+                <a th:href="@{/books(page=0, category=${category})}"
+                   th:class="${bookPage.first ? 'pg-btn disabled' : 'pg-btn'}">« First</a>
+
+                <a th:href="@{/books(page=${bookPage.number - 1}, category=${category})}"
+                   th:class="${bookPage.first ? 'pg-btn disabled' : 'pg-btn'}">‹ Prev</a>
+
+                <th:block th:each="i : ${#numbers.sequence(0, bookPage.totalPages - 1)}">
+                    <a th:href="@{/books(page=${i}, category=${category})}"
+                       th:text="${i + 1}"
+                       th:class="${i == bookPage.number ? 'pg-btn active' : 'pg-btn'}">1</a>
+                </th:block>
+
+                <a th:href="@{/books(page=${bookPage.number + 1}, category=${category})}"
+                   th:class="${bookPage.last ? 'pg-btn disabled' : 'pg-btn'}">Next ›</a>
+
+                <a th:href="@{/books(page=${bookPage.totalPages - 1}, category=${category})}"
+                   th:class="${bookPage.last ? 'pg-btn disabled' : 'pg-btn'}">Last »</a>
+
+                <span class="pg-info"
+                      th:text="'Page ' + (${bookPage.number + 1}) + ' of ' + ${bookPage.totalPages}">Page 1 of 3</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

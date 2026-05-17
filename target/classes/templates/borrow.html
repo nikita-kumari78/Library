@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>LMS — Borrowing</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="app-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-icon">📚</span>
+        <div><div class="logo-title">LibraSystem</div><div class="logo-sub">LMS v1.0</div></div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">MAIN</div>
+        <a th:href="@{/dashboard}" class="nav-item">🏠 Dashboard</a>
+        <a th:href="@{/books}" class="nav-item">📚 Books</a>
+        <a th:href="@{/borrow}" class="nav-item active">🔄 Borrowing</a>
+        <div class="nav-section" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+        <a th:href="@{/members}" class="nav-item" sec:authorize="hasRole('ADMIN')">👥 Members</a>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+            <div class="user-name" th:text="${#authentication.name}">User</div>
+            <div class="user-role" sec:authorize="hasRole('ADMIN')">ADMIN</div>
+        </div>
+        <a th:href="@{/logout}" class="logout-btn">⬅</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <span class="page-title">Borrowing Records</span>
+        <div class="topbar-right" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/borrow/issue}" class="btn btn-primary btn-sm">+ Issue Book</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div class="alert alert-warn" th:if="${overdueCount > 0}">
+            ⚠ <strong th:text="${overdueCount}">0</strong> books are overdue — please follow up with students.
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>🔄 Borrow Records</h3>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Book</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th sec:authorize="hasRole('ADMIN')">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${records.content}">
+                        <td th:text="${record.id}">1</td>
+                        <td th:text="${record.user.name}">Student</td>
+                        <td th:text="${record.book.title}">Book</td>
+                        <td th:text="${record.issueDate}">2025-01-01</td>
+                        <td th:text="${record.dueDate}">2025-01-15</td>
+                        <td th:text="${record.returnDate != null ? record.returnDate : '—'}">—</td>
+                        <td>
+                            <span th:class="${record.status.name() == 'RETURNED' ? 'status status-available' :
+                                             record.status.name() == 'OVERDUE'  ? 'status status-overdue'  :
+                                             'status status-borrowed'}"
+                                  th:text="${record.status}">BORROWED</span>
+                        </td>
+                        <td sec:authorize="hasRole('ADMIN')">
+                            <form th:if="${record.status.name() != 'RETURNED'}"
+                                  th:action="@{/borrow/return/{id}(id=${record.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-primary">Return</button>
+                            </form>
+                            <span th:if="${record.status.name() == 'RETURNED'}" style="color:#4a5568">—</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${records.content.empty}">
+                        <td colspan="8" style="text-align:center;color:#64748b;padding:24px;">No records found</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- PAGINATION -->
+            <div class="pagination" th:if="${records.totalPages > 1}">
+                <a th:href="@{/borrow(page=${records.number - 1})}"
+                   th:class="${records.first ? 'pg-btn disabled' : 'pg-btn'}">‹ Prev</a>
+                <th:block th:each="i : ${#numbers.sequence(0, records.totalPages - 1)}">
+                    <a th:href="@{/borrow(page=${i})}"
+                       th:text="${i + 1}"
+                       th:class="${i == records.number ? 'pg-btn active' : 'pg-btn'}">1</a>
+                </th:block>
+                <a th:href="@{/borrow(page=${records.number + 1})}"
+                   th:class="${records.last ? 'pg-btn disabled' : 'pg-btn'}">Next ›</a>
+                <span class="pg-info" th:text="'Page ' + (${records.number + 1}) + ' of ' + ${records.totalPages}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

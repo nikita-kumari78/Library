@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LMS — Add Book</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="app-body">
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-icon">📚</span>
+        <div><div class="logo-title">LibraSystem</div><div class="logo-sub">LMS v1.0</div></div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">MAIN</div>
+        <a th:href="@{/dashboard}" class="nav-item">🏠 Dashboard</a>
+        <a th:href="@{/books}" class="nav-item active">📚 Books</a>
+        <a th:href="@{/borrow}" class="nav-item">🔄 Borrowing</a>
+        <div class="nav-section">ADMIN</div>
+        <a th:href="@{/members}" class="nav-item">👥 Members</a>
+    </nav>
+    <div class="sidebar-user">
+        <div class="user-avatar">AD</div>
+        <div class="user-info"><div class="user-name">Admin</div><div class="user-role">ADMIN</div></div>
+        <a th:href="@{/logout}" class="logout-btn">⬅</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <span class="page-title" th:text="${book.id != null ? 'Edit Book' : 'Add New Book'}">Add Book</span>
+    </div>
+    <div class="content">
+        <div class="card" style="max-width:600px;">
+            <div class="card-header">
+                <h3 th:text="${book.id != null ? '✏ Edit Book' : '➕ Add New Book'}">Add Book</h3>
+            </div>
+            <form th:action="${book.id != null ? '/books/edit/' + book.id : '/books/save'}"
+                  th:object="${book}" method="post" style="padding:16px;">
+
+                <div class="form-group">
+                    <label>Book Title *</label>
+                    <input type="text" th:field="*{title}" class="form-input" placeholder="e.g. Clean Code" required>
+                </div>
+                <div class="form-group">
+                    <label>Author *</label>
+                    <input type="text" th:field="*{author}" class="form-input" placeholder="Author name" required>
+                </div>
+                <div class="form-group">
+                    <label>ISBN *</label>
+                    <input type="text" th:field="*{isbn}" class="form-input" placeholder="978-XXXXXXXXXX" required>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select th:field="*{category}" class="form-input">
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Physics">Physics</option>
+                            <option value="Literature">Literature</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Copies *</label>
+                        <input type="number" th:field="*{totalCopies}" class="form-input" min="1" placeholder="1" required>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button type="submit" class="btn btn-primary">💾 Save Book</button>
+                    <a th:href="@{/books}" class="btn btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
